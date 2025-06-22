@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云盘系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+      .form-group {
+            margin-bottom: 15px;
+        }
+
+      .form-group label {
+            display: block;
+        }
+
+      .form-group input {
+            width: 200px;
+        }
+
+        #fileOperations {
+            display: none;
+        }
+
+    .titleb {
+	font-size: 36px;
+	position: absolute;
+	width: 500px;
+	height: 102px;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 1;
+	background-image: url(title1.png);
+}
+    .title1 {
+	font-family: "华文仿宋";
+	font-size: 36px;
+	position: absolute;
+	left: 30px;
+	top: 24px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 2;
+	color: #375659;
+}
+
+    .login {
+	position: absolute;
+	top: 120px;
+	font-family: "幼圆";
+	}
+    .register{
+	position: absolute;
+	top: 290px;
+	font-family: "幼圆";
+	}
+
+	}
+    .sub_login {
+    width: 100%;
+    margin: 20px 0;
+}
+
+.sub_login input[type="submit"] {
+    position: relative;
+    z-index: 1;
+
+    padding: 10px 25px;
+    border: 2px solid #375659;
+    border-radius: 6px;
+    background: transparent;
+    color: #375659;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sub_login input[type="submit"]::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    bottom: -10px;
+    left: -20px;
+    right: -20px;
+    z-index: -1;
+}
+
+.sub_login input[type="submit"]:hover {
+    background: #375659;
+    color: white;
+    border-color: #375659;
+}
+
+.sub_login input[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+
+	.sub_register input[type="submit"]{
+	padding: 10px 25px;
+    border: 2px solid #375659; /* 主色描边 */
+    border-radius: 6px;
+    background: transparent; /* 透明背景 */
+    color: #375659;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+	}
+	.sub_register input[type="submit"]:hover{
+	  background: #375659; /* 悬停时填充主色 */
+      color: white;
+      border-color: #375659; /* 保持描边颜色一致 */
+
+	}
+	.sub_register input[type="submit"]:active{
+	 transform: scale(0.98); /* 点击时轻微缩放 */
+	}
+
+
+
+
+    .bg1 {
+	background-color: #AAC6C2;
+	height: 400px;
+	width: 500px;
+	position: absolute;
+	top: 102px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index:-1;
+}
+    .op_word {
+	position: absolute;
+	top: 102px;
+	font-family: "幼圆";
+	font-size: 15px;
+}
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+<h1><div class=title1>云盘系统</div></h1>
+<div class=titleb></div>
+<div class=bg1></div>
+<!-- 登录表单 -->
+<div class=login>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="username">用户名:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">密码:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class=sub_login>
+            <input type="submit" value="登录">
+        </div>
+    </form>
+</div>
+
+<!-- 注册表单 -->
+<div class=register>
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="newUsername">新用户名:</label>
+            <input type="text" id="newUsername" name="newUsername" required>
+        </div>
+        <div class="form-group">
+            <label for="newPassword">新密码:</label>
+            <input type="password" id="newPassword" name="newPassword" required>
+        </div>
+        <div class=sub_register>
+            <input type="submit" value="注册">
+        </div>
+    </form>
+</div>
+<div class=op_word>
+    <!-- 文件操作区域 -->
+    <div id="fileOperations">
+        <div>文件操作</div>
+        <input type="file" id="uploadFile">
+        <div class="form-group">
+            <label for="uploadPath">HDFS端路径（可供上传输入和获取文件列表搜索）:</label>
+            <input type="text" id="uploadPath" placeholder="请输入上传路径">
+        </div>
+        <button onclick="uploadFile()">上传文件</button>
+
+        <div class="form-group">
+            <label for="fileList">文件列表:</label>
+            <div id="fileListOutput"></div>
+        </div>
+        <button onclick="listFiles()">获取文件列表</button>
+
+        <button onclick="downloadFile()">下载文件</button>
+        <button onclick="deleteFile()">删除文件</button>
+        <button onclick="renameFile()">重命名文件</button>
+        <button onclick="copyFile()">复制文件</button>
+        <button onclick="moveFile()">移动文件</button>
+
+    </div>
+</div>
+
+<script>
+    let userId;
+    // 登录
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        console.log("登录表单提交事件已阻止默认行为");
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const user = {
+            username: username,
+            password: password
+        };
+        $.ajax({
+            url: '/user/login',
+            type: 'POST',
+            data: JSON.stringify(user),
+            contentType: 'application/json',
+            success: function (data) {
+                const status = data.status;
+                if (status === "登录成功") {
+
+                    userId = data.userId;
+
+                    alert("登录成功，欢迎使用云盘系统，用户"+username);
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('fileOperations').style.display = 'block';
+                }
+                else if (status === "用户名不存在")
+                {
+                    alert("登录的用户名不存在，请检查后重试");
+                }
+                else {
+                    alert(status);
+                }
+            },
+                error: function (error)
+                {
+                 if (error.responseJSON && error.responseJSON.status === "密码错误")
+                 {
+                      alert("登录密码错误，请重新输入");
+                 }
+                 else
+                 {
+                      alert('登录失败，请检查网络或稍后重试');
+                 }
+}
+        });
+    });
+
+    // 注册
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        console.log("注册表单提交事件已阻止默认行为");
+        const registerButton = document.querySelector('input[type="submit"]');
+        registerButton.disabled = true;
+        const newUsername = document.getElementById('newUsername').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const user = {
+            username: newUsername,
+            password: newPassword
+        };
+        $.ajax({
+            url: '/user/register',
+            type: 'POST',
+            data: JSON.stringify(user),
+            contentType: 'application/json',
+            success: function (data) {
+                registerButton.disabled = false;
+                const status = data.status;
+                if (status === "注册成功") {
+                       alert("注册成功");
+                    userId = data.userId;
+
+                    document.getElementById('fileOperations').style.display = 'block';
+                } else if (status === "用户名已存在") {
+                    alert("注册的用户名已存在，请更换用户名");
+                } else {
+                    alert(status);
+                }
+            },
+            error: function () {
+                registerButton.disabled = false;
+                alert('注册失败，请检查网络或稍后重试');
+                console.log("发送的JSON:", JSON.stringify(user)); // 检查序列化后的JSON
+            }
+        });
+    });
+    // 文件上传
+    function uploadFile() {
+        if (!userId) {
+            alert("请先登录");
+            return;
+        }
+        const file = document.getElementById('uploadFile').files[0];
+        if (!file) {
+            alert('请选择要上传的文件');
+            return;
+        }
+        const uploadPath = document.getElementById('uploadPath').value;
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('userId', userId);
+        formData.append('uploadPath', uploadPath);
+
+        $.ajax({
+            url: '/file/upload',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                  response = response.trim();
+                try {
+                    const jsonResponse = response;
+                    alert("上传成功");
+                    //alert(jsonResponse.message);
+                    listFiles();
+                } catch (error) {
+                    alert('解析上传响应失败: ' + error.message);
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                if (jqXHR.status === 500) {
+                    alert('服务器内部错误，上传出现异常');
+                } else {
+                    alert('文件上传失败，请检查网络或稍后重试');
+                }
+            }
+        });
+    }
+
+ // 文件下载
+    function downloadFile() {
+        if (!userId) {
+            alert("请先登录");
+            return;
+        }
+        const uploadPath = document.getElementById('uploadPath').value;
+        if (!uploadPath) {
+            alert('请输入要下载的文件路径');
+            return;
+        }
+        const fileObj = {
+            userId: userId,
+            uploadPath: uploadPath
+        };
+        $.ajax({
+            url: '/file/download',
+            type: 'POST',
+            data: JSON.stringify(fileObj),
+            contentType: 'application/json',
+            success: function (response) {
+                try {
+                    const jsonResponse = response;
+                    alert(jsonResponse.message);
+                } catch (error) {
+                    alert('解析下载响应失败: ' + error.message);
+                }
+            },
+            error: function () {
+                alert('文件下载失败，请检查网络或稍后重试');
+            }
+        });
+    }
+
+    // 文件删除
+    function deleteFile() {
+        if (!userId) {
+            alert("请先登录");
+            return;
+        }
+        const uploadPath = document.getElementById('uploadPath').value;
+        if (!uploadPath) {
+            alert('请输入要删除的文件路径');
+            return;
+        }
+        if (confirm('确定要删除该文件吗?')) {
+            const fileObj = {
+                userId: userId,
+                uploadPath: uploadPath
+            };
+            $.ajax({
+                url: '/file/delete',
+                type: 'POST',
+                data: JSON.stringify(fileObj),
+                contentType: 'application/json',
+                success: function (response) {
+                    try {
+                        const jsonResponse = response;
+                        alert(jsonResponse.message);
+                        listFiles();
+                    } catch (error) {
+                        alert('解析删除响应失败: ' + error.message);
+                    }
+                },
+                error: function () {
+                    alert('文件删除失败，请检查网络或稍后重试');
+                }
+            });
+        }
+    }
+
+    // 文件重命名
+    function renameFile() {
+        if (!userId) {
+            alert("请先登录");
+            return;
+        }
+        const uploadPath = document.getElementById('uploadPath').value;
+        if (!uploadPath) {
+            alert('请输入要重命名的文件路径');
+            return;
+        }
+        const newName = prompt("请输入新文件名");
+        if (newName) {
+            if (confirm('确定要重命名该文件吗?')) {
+                const data = {
+                    userId: userId,
+                    uploadPath: uploadPath,
+                    newFileName: newName
+                };
+                $.ajax({
+                    url: '/file/rename',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        try {
+                            const jsonResponse = response;
+                            //alert(jsonResponse.message);
+                            console.log(response);
+                            listFiles();
+                        } catch (error) {
+                            alert('解析重命名响应失败: ' + error.message);
+                        }
+                    },
+                    error: function () {
+                        alert('文件重命名失败，请检查网络或稍后重试');
+                    }
+                });
+            }
+        }
+    }
+
+
+ // 文件复制
+    function copyFile() {
+        if (!userId) {
+            alert("请先登录");
+            return;
+        }
+        const uploadPath = document.getElementById('uploadPath').value;
+        if (!uploadPath) {
+            alert('请输入要复制的源文件路径');
+            return;
+        }
+        if (confirm('确定要复制该文件吗?')) {
+            const data = {
+                sourceUserId: userId,
+                sourceUploadPath: uploadPath,
+                targetUserId: userId,
+                // 这里去除掉获取目标文件名的逻辑，因为后端不再需要这个参数
+                // 同时 targetUploadPath 也可以去除，因为后端固定了复制路径
+            };
+            $.ajax({
+                url: '/file/copy',
+                type: 'POST',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function (response) {
+                    try {
+                        const jsonResponse = response;
+                        alert("复制成功，检查文件夹/copy");
+                        listFiles();
+                    } catch (error) {
+                        alert('解析复制响应失败: ' + error.message);
+                    }
+                },
+                error: function () {
+                    alert('文件复制失败，请检查网络或稍后重试');
+                }
+            });
+        }
+    }
+
+ // 文件移动
+    function moveFile() {
+        if (!userId) {
+            alert("请先登录");
+            return;
+        }
+        const sourceUploadPath = document.getElementById('uploadPath').value;
+        if (!sourceUploadPath) {
+            alert('请输入要移动的源文件路径');
+            return;
+        }
+        const localTargetPath = prompt("请输入本地目标路径");
+        if (localTargetPath) {
+            if (confirm('确定要移动该文件吗?')) {
+                const data = {
+                    sourceUserId: userId,
+                    sourceUploadPath: sourceUploadPath,
+                    targetUserId: userId,
+                    localTargetPath: localTargetPath
+                };
+                $.ajax({
+                    url: '/file/move',
+                    type: 'POST',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function (response) {
+                        try {
+                            const jsonResponse = response;
+                            alert("移动成功，检查你输入的路径");
+                            listFiles();
+                        } catch (error) {
+                            alert('解析移动响应失败: ' + error.message);
+                        }
+                    },
+                    error: function () {
+                        alert('文件移动失败，请检查网络或稍后重试');
+                    }
+                });
+            }
+        }
+    }
+
+ // 显示文件列表
+    function listFiles() {
+        if (!userId) {
+            console.log('用户未登录，无法获取文件列表');
+            return;
+        }
+        const uploadPath = document.getElementById('uploadPath').value;
+        const queryParams = "?userId=" + userId + "&path=" + uploadPath;
+        const url = `/file/list/${userId}${queryParams}`;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            //contentType: 'application/json',
+            success: function (response) {
+                try {
+                    fileListOutput.innerHTML = '';
+                    response.forEach(function (file) {
+                        const p = document.createElement('p');
+                        p.textContent = `文件名: ${file.fileName}, 文件大小: ${file.fileSize}, 文件路径: ${file.filePath}`;
+                        fileListOutput.appendChild(p);
+                    });
+                } catch (error) {
+                    console.error('解析文件列表响应失败: ', error.message);
+                    alert('解析文件列表响应失败: ' + error.message);
+                }
+            },
+            error: function () {
+                console.log('获取文件列表失败');
+                alert('文件列表获取失败，请检查网络或稍后重试');
+            }
+        });
+    }
+
+    $(document).ready(function () {});
+</script>
+</body>
+
+</html>

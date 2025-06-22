@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<configuration>
+
+    <!-- Site specific YARN configuration properties -->
+
+    <!-- 指定 MR走 shuffle -->
+    <property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+
+
+    <!-- 环境变量的继承 -->
+    <property>
+        <name>yarn.nodemanager.env-whitelist</name>
+        <value>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME</value>
+    </property>
+
+
+
+
+    <!-- 启用 ResourceManager HA -->
+    <property>
+        <name>yarn.resourcemanager.ha.enabled</name>
+        <value>true</value>
+    </property>
+
+    <!-- 声明集群 ID -->
+    <property>
+        <name>yarn.resourcemanager.cluster-id</name>
+        <value>cluster-yarn1</value>
+    </property>
+
+    <!-- 指定 ResourceManager 的逻辑 ID 列表（需与后续 rm1/rm2/rm3 对应） -->
+    <property>
+        <name>yarn.resourcemanager.ha.rm-ids</name>
+        <value>rm1,rm2,rm3</value>
+    </property>
+
+    <!-- ========== rm1 的配置 ========== -->
+
+
+
+    <!-- 指定 rm1 的主机名 -->
+    <property>
+        <name>yarn.resourcemanager.hostname.rm1</name>
+        <value>zzr1</value>
+    </property>
+
+    <!-- 指定 rm1 的 Web UI 地址 -->
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm1</name>
+        <value>zzr1:8088</value>
+    </property>
+
+    <!-- 指定 rm1 的内部通信地址（供客户端使用） -->
+    <property>
+        <name>yarn.resourcemanager.address.rm1</name>
+        <value>zzr1:8032</value>
+    </property>
+
+    <!-- 指定 rm1 的调度器地址（供 ApplicationMaster 申请资源） -->
+    <property>
+        <name>yarn.resourcemanager.scheduler.address.rm1</name>
+        <value>zzr1:8030</value>
+    </property>
+
+    <!-- 指定 rm1 的资源跟踪地址（供 NodeManager 注册） -->
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address.rm1</name>
+        <value>zzr1:8031</value>
+    </property>
+
+    <!-- ========== rm2 的配置 ========== -->
+
+    <!-- 指定 rm2 的主机名 -->
+    <property>
+        <name>yarn.resourcemanager.hostname.rm2</name>
+        <value>zzr2</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm2</name>
+        <value>zzr2:8088</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.address.rm2</name>
+        <value>zzr2:8032</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.scheduler.address.rm2</name>
+        <value>zzr2:8030</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address.rm2</name>
+        <value>zzr2:8031</value>
+    </property>
+
+    <!-- ========== rm3 的配置 ========== -->
+
+
+
+
+    <!-- 指定 rm3 的主机名 -->
+    <property>
+        <name>yarn.resourcemanager.hostname.rm3</name>
+        <value>zzr3</value>
+    </property>
+
+    <!-- 指定 rm3 的 Web UI 地址 -->
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm3</name>
+        <value>zzr3:8088</value>
+    </property>
+
+    <!-- 指定 rm3 的内部通信地址 -->
+    <property>
+        <name>yarn.resourcemanager.address.rm3</name>
+        <value>zzr3:8032</value>
+    </property>
+
+    <!-- 指定 rm3 的调度器地址 -->
+    <property>
+        <name>yarn.resourcemanager.scheduler.address.rm3</name>
+        <value>zzr3:8030</value>
+    </property>
+
+    <!-- 指定 rm3 的资源跟踪地址 -->
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address.rm3</name>
+        <value>zzr3:8031</value>
+    </property>
+
+    <!-- 指定 ZooKeeper 集群地址（用于 RM 主备选举和状态存储） -->
+    <property>
+        <name>yarn.resourcemanager.zk-address</name>
+        <value>zzr1:2181,zzr2:2181,zzr3:2181</value>
+    </property>
+
+    <!-- 启用自动恢复（故障转移后恢复状态） -->
+    <property>
+        <name>yarn.resourcemanager.recovery.enabled</name>
+        <value>true</value>
+    </property>
+
+    <!-- 指定状态存储类（基于 ZooKeeper 存储 RM 状态） -->
+    <property>
+        <name>yarn.resourcemanager.store.class</name>
+        <value>org.apache.hadoop.yarn.server.resourcemanager.recovery.ZKRMStateStore</value>
+    </property>
+
+
+</configuration>
+
+
+
+
+
+
+
+

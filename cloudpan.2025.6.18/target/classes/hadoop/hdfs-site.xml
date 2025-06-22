@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+
+    <!-- NameNode数据存储目录 -->
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file://${hadoop.tmp.dir}/name</value>
+    </property>
+    <!-- DataNode数据存储目录 -->
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file://${hadoop.tmp.dir}/data</value>
+    </property>
+    <!-- JournalNode数据存储目录 -->
+    <property>
+        <name>dfs.journalnode.edits.dir</name>
+        <value>${hadoop.tmp.dir}/jn</value>
+    </property>
+    <!-- 完全分布式集群名称 -->
+    <property>
+        <name>dfs.nameservices</name>
+        <value>mycluster</value>
+    </property>
+    <!-- 集群中的NameNode有哪些 -->
+    <property>
+        <name>dfs.ha.namenodes.mycluster</name>
+        <value>nn1,nn2,nn3</value>
+    </property>
+    <!-- NameNode的RPC通信地址 -->
+    <property>
+        <name>dfs.namenode.rpc-address.mycluster.nn1</name>
+        <value>zzr1:8020</value>
+    </property>
+    <property>
+        <name>dfs.namenode.rpc-address.mycluster.nn2</name>
+        <value>zzr2:8020</value>
+    </property>
+    <property>
+        <name>dfs.namenode.rpc-address.mycluster.nn3</name>
+        <value>zzr3:8020</value>
+    </property>
+
+    <!-- 指定 NameNode 的 HTTP 地址 -->
+    <property>
+        <name>dfs.namenode.http-address.mycluster.nn1</name>
+        <value>zzr1:9870</value>
+    </property>
+    <property>
+        <name>dfs.namenode.http-address.mycluster.nn2</name>
+        <value>zzr2:9870</value>
+    </property>
+    <property>
+        <name>dfs.namenode.http-address.mycluster.nn3</name>
+        <value>zzr3:9870</value>
+    </property>
+    <!-- 指定 NameNode 元数据在 JournalNode 中的存储位置 -->
+    <property>
+        <name>dfs.namenode.shared.edits.dir</name>
+        <value>qjournal://zzr1:8485;zzr2:8485;zzr3:8485/mycluster</value>
+    </property>
+    <!-- 访问代理类：Client 主要用于确定哪个 NameNode 处于 Active 状态 -->
+    <property>
+        <name>dfs.client.failover.proxy.provider.mycluster</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+    <!-- 配置隔离机制，即同一时刻只能有一台节点服务器对外响应 -->
+    <property>
+        <name>dfs.ha.fencing.methods</name>
+        <value>sshfence</value>
+    </property>
+    <!-- 在使用隔离机制时，需要使用 SSH 免密登录 -->
+    <property>
+        <name>dfs.ha.fencing.ssh.private-key-files</name>
+        <value>/home/zzr1/.ssh/id_rsa</value>
+    </property>
+
+
+
+
+    <property>
+        <name>dfs.ha.automatic-failover.enabled</name>
+        <value>true</value>
+    </property>
+
+
+</configuration>
